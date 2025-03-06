@@ -1,0 +1,77 @@
+<form action="/api/contacts/update" method="post">
+    <input type="hidden" name="resourceName" th:value="${contact.resourceName}">
+
+    <div class="mb-3">
+        <label for="firstName" class="form-label">First Name</label>
+        <input type="text" class="form-control" id="firstName" name="firstName"
+               th:value="${contact.names != null && !contact.names.isEmpty() ? contact.names[0].givenName : ''}" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="lastName" class="form-label">Last Name</label>
+        <input type="text" class="form-control" id="lastName" name="lastName"
+               th:value="${contact.names != null && !contact.names.isEmpty() ? contact.names[0].familyName : ''}" required>
+    </div>
+
+    <!-- Email fields with existing values -->
+    <div class="mb-3" id="emailFields">
+        <label class="form-label">Email Addresses</label>
+        <div th:if="${contact.emailAddresses == null || contact.emailAddresses.isEmpty()}">
+            <div class="input-group mb-2">
+                <input type="email" class="form-control" name="emails" placeholder="Email">
+                <button type="button" class="btn btn-outline-secondary" onclick="addEmailField()">+</button>
+            </div>
+        </div>
+        <div th:if="${contact.emailAddresses != null && !contact.emailAddresses.isEmpty()}">
+            <div th:each="email, stat : ${contact.emailAddresses}" class="input-group mb-2">
+                <input type="email" class="form-control" name="emails" th:value="${email.value}" placeholder="Email">
+                <button th:if="${stat.index == 0}" type="button" class="btn btn-outline-secondary" onclick="addEmailField()">+</button>
+                <button th:if="${stat.index > 0}" type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove()">-</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phone fields with existing values -->
+    <div class="mb-3" id="phoneFields">
+        <label class="form-label">Phone Numbers</label>
+        <div th:if="${contact.phoneNumbers == null || contact.phoneNumbers.isEmpty()}">
+            <div class="input-group mb-2">
+                <input type="tel" class="form-control" name="phoneNumbers" placeholder="Phone Number">
+                <button type="button" class="btn btn-outline-secondary" onclick="addPhoneField()">+</button>
+            </div>
+        </div>
+        <div th:if="${contact.phoneNumbers != null && !contact.phoneNumbers.isEmpty()}">
+            <div th:each="phone, stat : ${contact.phoneNumbers}" class="input-group mb-2">
+                <input type="tel" class="form-control" name="phoneNumbers" th:value="${phone.value}" placeholder="Phone Number">
+                <button th:if="${stat.index == 0}" type="button" class="btn btn-outline-secondary" onclick="addPhoneField()">+</button>
+                <button th:if="${stat.index > 0}" type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove()">-</button>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update Contact</button>
+</form>
+
+<script>
+    function addEmailField() {
+        const container = document.getElementById('emailFields');
+        const div = document.createElement('div');
+        div.className = 'input-group mb-2';
+        div.innerHTML = `
+            <input type="email" class="form-control" name="emails" placeholder="Email">
+            <button type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove()">-</button>
+        `;
+        container.appendChild(div);
+    }
+
+    function addPhoneField() {
+        const container = document.getElementById('phoneFields');
+        const div = document.createElement('div');
+        div.className = 'input-group mb-2';
+        div.innerHTML = `
+            <input type="tel" class="form-control" name="phoneNumbers" placeholder="Phone Number">
+            <button type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove()">-</button>
+        `;
+        container.appendChild(div);
+    }
+</script>

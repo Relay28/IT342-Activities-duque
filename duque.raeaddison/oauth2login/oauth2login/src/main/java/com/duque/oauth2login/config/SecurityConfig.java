@@ -14,16 +14,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo.oidcUserService(new OidcUserService())) // Handle OpenID Connect users
-                        .defaultSuccessUrl("/contacts", true) // Redirect to contacts after login
-                )
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                .oauth2Login(oauth -> oauth.defaultSuccessUrl("/contacts", true))
                 .logout(logout -> logout.logoutSuccessUrl("/"))
+                .formLogin(form -> form.defaultSuccessUrl("/", true))
                 .csrf(AbstractHttpConfigurer::disable)
                 .build();
+
     }
 }
