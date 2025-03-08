@@ -2,78 +2,92 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>User Contacts</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
-<body class="container mt-5">
-<!-- Flash messages for feedback -->
-<div th:if="${message}" class="alert alert-success" role="alert">
-  <span th:text="${message}"></span>
+<body class="bg-light py-5">
+<div class="container">
+
+  <!-- Flash Messages -->
+  <div th:if="${successMessage}" class="alert alert-success text-center" role="alert">
+    <span th:text="${message}"></span>
+  </div>
+  <div th:if="${error}" class="alert alert-danger text-center" role="alert">
+    <span th:text="${error}"></span>
+  </div>
+
+
+  <div class="d-flex justify-content-end mb-3">
+    <a href="/logout" class="btn btn-secondary">Logout</a>
+  </div>
+
+  <!-- User Info Card -->
+  <div class="card shadow-lg p-4 mb-4">
+    <h2 class="mb-3 text-primary">Google Contacts</h2>
+
+    <div class="mb-2">
+      <span class="fw-bold">Name:</span>
+      <span th:text="${userinfo.name}" class="ms-2"></span>
+    </div>
+
+    <div class="mb-2">
+      <span class="fw-bold">Email:</span>
+      <span th:text="${userinfo.email}" class="ms-2"></span>
+    </div>
+
+    <a href="/add-contact" class="btn btn-primary mt-3">+ Add New Contact</a>
+  </div>
+
+
+  <!-- Contacts Table -->
+  <div class="card shadow-sm p-4">
+    <h3 class="mb-3">Contacts List</h3>
+    <table class="table table-hover align-middle">
+      <thead class="table-dark">
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone Number</th>
+        <th class="text-center">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="contact : ${contacts}">
+        <td>
+          <span th:if="${contact.names != null && !contact.names.isEmpty()}" th:text="${contact.names[0].displayName}"></span>
+          <span th:unless="${contact.names != null && !contact.names.isEmpty()}">No name</span>
+        </td>
+        <td>
+            <span th:if="${contact.emailAddresses != null && !contact.emailAddresses.isEmpty()}"
+                  th:each="email : ${contact.emailAddresses}" th:text="${email.value}"></span>
+          <span th:unless="${contact.emailAddresses != null && !contact.emailAddresses.isEmpty()}">No email</span>
+        </td>
+        <td>
+            <span th:if="${contact.phoneNumbers != null && !contact.phoneNumbers.isEmpty()}"
+                  th:each="phone : ${contact.phoneNumbers}" th:text="${phone.value}"></span>
+          <span th:unless="${contact.phoneNumbers != null && !contact.phoneNumbers.isEmpty()}">No phone</span>
+        </td>
+        <td class="text-center">
+          <a th:href="@{/edit-contact(resourceName=${contact.resourceName})}" class="btn btn-sm btn-warning me-2">Edit</a>
+          <form th:action="@{/api/contacts/delete}" method="post" class="d-inline">
+            <input type="hidden" name="resourceName" th:value="${contact.resourceName}" />
+            <button type="submit" class="btn btn-sm btn-danger"
+                    onclick="return confirm('Are you sure you want to delete this contact?')">Delete</button>
+          </form>
+        </td>
+      </tr>
+      <tr th:if="${contacts.isEmpty()}">
+        <td colspan="4" class="text-center text-muted">No contacts found</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+
 </div>
-<div th:if="${error}" class="alert alert-danger" role="alert">
-  <span th:text="${error}"></span>
-</div>
 
-<div class="card p-4 mb-4">
-  <h2 class="mb-3">Google Contacts</h2>
-  <a href="/add-contact" class="btn btn-primary mb-3">Add New Contact</a>
-</div>
-
-<div class="mt-4">
-  <h3>Contacts List</h3>
-  <table class="table table-bordered mt-3">
-    <thead class="table-dark">
-    <tr>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Phone Number</th>
-      <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="contact : ${contacts}">
-      <!-- Name - nested structure in Person object -->
-      <td>
-            <span th:if="${contact.names != null && !contact.names.isEmpty()}"
-                  th:text="${contact.names[0].displayName}">Name</span>
-        <span th:unless="${contact.names != null && !contact.names.isEmpty()}">No name</span>
-      </td>
-
-      <!-- Email - nested structure in Person object -->
-      <td>
-        <div th:if="${contact.emailAddresses != null && !contact.emailAddresses.isEmpty()}"
-             th:each="email : ${contact.emailAddresses}">
-          <span th:text="${email.value}">Email</span>
-        </div>
-        <span th:unless="${contact.emailAddresses != null && !contact.emailAddresses.isEmpty()}">No email</span>
-      </td>
-
-      <!-- Phone numbers - nested structure in Person object -->
-      <td>
-        <div th:if="${contact.phoneNumbers != null && !contact.phoneNumbers.isEmpty()}"
-             th:each="phone : ${contact.phoneNumbers}">
-          <span th:text="${phone.value}">Phone</span>
-        </div>
-        <span th:unless="${contact.phoneNumbers != null && !contact.phoneNumbers.isEmpty()}">No phone</span>
-      </td>
-
-      <!-- Actions -->
-      <td>
-        <a th:href="@{/edit-contact(resourceName=${contact.resourceName})}" class="btn btn-sm btn-warning">Edit</a>
-        <form th:action="@{/api/contacts/delete}" method="post" style="display: inline;">
-          <input type="hidden" name="resourceName" th:value="${contact.resourceName}" />
-          <button type="submit" class="btn btn-sm btn-danger"
-                  onclick="return confirm('Are you sure you want to delete this contact?')">Delete</button>
-        </form>
-      </td>
-    </tr>
-    <tr th:if="${contacts.isEmpty()}">
-      <td colspan="4" class="text-center">No contacts found</td>
-    </tr>
-    </tbody>
-  </table>
-
-  <a href="/logout" class="btn btn-secondary mt-3">Logout</a>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

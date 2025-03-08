@@ -3,6 +3,8 @@ package com.duque.oauth2login.controller;
 import com.duque.oauth2login.service.GooglePeopleService;
 import com.google.api.services.people.v1.model.Person;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,12 +27,14 @@ public class UiController {
 
     // Endpoint to show the list of contacts
     @GetMapping("/contacts")
-    public String showContacts(Model model) {
+    public String showContacts(Model model,@AuthenticationPrincipal OAuth2User principal) {
         try {
             // Fetch the list of contacts using the service
             List<Person> contacts = googlePeopleService.getContacts();
             // Add the contacts to the model
+
             model.addAttribute("contacts", contacts);
+            model.addAttribute("userinfo",principal.getAttributes());
             return "contacts";
         } catch (IOException e) {
             e.printStackTrace();

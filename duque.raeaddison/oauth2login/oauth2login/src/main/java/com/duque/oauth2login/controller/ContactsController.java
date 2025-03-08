@@ -26,13 +26,13 @@ public class ContactsController {
         this.googlePeopleService = googlePeopleService;
     }
 
-    @GetMapping
-    @ResponseBody
-    public List<Person> getContacts() throws IOException {
-        List<Person> contacts = googlePeopleService.getContacts();
-        //System.out.println("Fetched Contacts: " + contacts);
-        return contacts;
-    }
+//    @GetMapping
+//    @ResponseBody
+//    public List<Person> getContacts() throws IOException {
+//        List<Person> contacts = googlePeopleService.getContacts();
+//        //System.out.println("Fetched Contacts: " + contacts);
+//        return contacts;
+//    }
 
     @PostMapping("/add")
     public String addContact(@RequestParam String firstName, @RequestParam String lastName,
@@ -40,7 +40,7 @@ public class ContactsController {
                              RedirectAttributes redirectAttributes) {
         try {
             googlePeopleService.addContact(firstName, lastName, emails, phoneNumbers);
-            redirectAttributes.addFlashAttribute("message", "Contact added successfully!");
+            redirectAttributes.addFlashAttribute("successMessage", "Contact added successfully!");
             return "redirect:/contacts";
         } catch (IOException e) {
             e.printStackTrace();
