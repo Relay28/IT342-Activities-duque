@@ -8,9 +8,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.List;
@@ -32,8 +30,8 @@ public class UiController {
             // Fetch the list of contacts using the service
             List<Person> contacts = googlePeopleService.getContacts();
             // Add the contacts to the model
-
             model.addAttribute("contacts", contacts);
+            // Adds the info of the user to the model
             model.addAttribute("userinfo",principal.getAttributes());
             return "contacts";
         } catch (IOException e) {
