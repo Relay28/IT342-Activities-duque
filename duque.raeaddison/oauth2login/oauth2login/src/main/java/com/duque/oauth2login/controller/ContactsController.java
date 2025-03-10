@@ -26,13 +26,16 @@ public class ContactsController {
         this.googlePeopleService = googlePeopleService;
     }
 
-
+    //Endpoint that Adds a Contact and redirects to contact.html to see changes
     @PostMapping("/add")
     public String addContact(@RequestParam String firstName, @RequestParam String lastName,
                              @RequestParam List<String> emails, @RequestParam List<String> phoneNumbers,
                              RedirectAttributes redirectAttributes) {
         try {
+            //Calls method from service
             googlePeopleService.addContact(firstName, lastName, emails, phoneNumbers);
+
+            //Passes successMessage attribute to be passed to conatcts.html
             redirectAttributes.addFlashAttribute("successMessage", "Contact added successfully!");
             return "redirect:/contacts";
         } catch (IOException e) {
@@ -42,7 +45,7 @@ public class ContactsController {
         }
     }
 
-
+    //Endpoint that Updates A Contact and redirects to contact.html to see changes
     @PostMapping("/update")
     public String updateContact(@RequestParam String resourceName,
                                 @RequestParam String firstName,
@@ -51,20 +54,24 @@ public class ContactsController {
                                 @RequestParam List<String> phoneNumbers,
                                 RedirectAttributes redirectAttributes) {
         try {
+            //Calls method from service
             googlePeopleService.updateContact(resourceName, firstName, lastName, emails, phoneNumbers);
+            //Passes successMessage attribute to be passed to conatcts.html
             redirectAttributes.addFlashAttribute("successMessage", "Contact updated successfully!");
         } catch (IOException e) {
             e.printStackTrace();
             if (e.getMessage().contains("etag")) {
+                //Adds an attribute to be passed to conatcts.html
                 redirectAttributes.addFlashAttribute("error", "Contact was modified by someone else. Please reload and try again.");
             } else {
                 redirectAttributes.addFlashAttribute("error", "Failed to update contact: " + e.getMessage());
             }
         }
+        //redirects to contacts.html
         return "redirect:/contacts";
     }
 
-    // Endpoint to delete a contact
+    // Endpoint to delete a contact and redirects once again to contacts.html to see changes
     @PostMapping("/delete")
     public String deleteContact(@RequestParam String resourceName, RedirectAttributes redirectAttributes) {
         try {

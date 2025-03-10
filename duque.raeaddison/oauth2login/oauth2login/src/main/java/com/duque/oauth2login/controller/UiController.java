@@ -44,13 +44,13 @@ public class UiController {
         }
     }
 
-    // Endpoint to show the form to add a new contact
+    // Endpoint to show the addcontact.html form
     @GetMapping("/add-contact")
     public String showAddContactForm() {
         return "addcontact";
     }
 
-    // Endpoint to show the form to edit an existing contact
+    // Endpoint to show the form to edit an existing contact i.e show editcontact.html
     @GetMapping("/edit-contact")
     public String showEditContactForm(@RequestParam String resourceName, Model model) {
         try {

@@ -11,16 +11,23 @@
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card shadow-lg p-4">
+
                 <h2 class="text-center mb-4">Update Contact</h2>
+
+                <!--Edit form which calls update Endpoint when submitted -->
                 <form action="/api/contacts/update" method="post">
+
+                    <!-- Resource Name for identifying resource but hidden for security purposes  -->
                     <input type="hidden" name="resourceName" th:value="${contact.resourceName}">
 
+                    <!-- First Name Field  -->
                     <div class="mb-3">
                         <label for="firstName" class="form-label">First Name</label>
                         <input type="text" class="form-control" id="firstName" name="firstName"
                                th:value="${contact.names != null && !contact.names.isEmpty() ? contact.names[0].givenName : ''}" required>
                     </div>
 
+                    <!-- Last Name Field  -->
                     <div class="mb-3">
                         <label for="lastName" class="form-label">Last Name</label>
                         <input type="text" class="form-control" id="lastName" name="lastName"
@@ -51,7 +58,8 @@
                         <div th:if="${contact.phoneNumbers == null || contact.phoneNumbers.isEmpty()}">
                             <div class="input-group mb-2">
                                 <input type="tel" class="form-control" name="phoneNumbers" placeholder="Phone Number" required
-                                       pattern="^\+?[1-9]\d{1,14}$" title="Enter a valid phone number (E.164 format: +123456789)">
+                                       pattern="^(?:\+63|0)9\d{9}$|^(?:\+63|0)(2|32|82|45|74|52|43|47)\d{7}$"
+                                       title="Enter a valid Philippine phone number (e.g., +639171234567 or 09171234567 for mobile; +6328123456 for landline)">
                                 <button type="button" class="btn btn-outline-secondary" onclick="addPhoneField()">+</button>
                             </div>
                         </div>
@@ -67,8 +75,11 @@
                         <div class="text-danger mt-2" id="phoneError"></div> <!-- Error message container -->
                     </div>
 
+                    <!-- Buttons -->
                     <div class="d-flex justify-content-between mt-3">
+                        <!-- Cancel Button -->
                         <a href="contacts" class="btn btn-outline-secondary flex-grow-1 me-2">Cancel</a>
+                        <!-- Update Button -->
                         <button type="submit" class="btn btn-primary flex-grow-1">Update Contact</button>
                     </div>
 
