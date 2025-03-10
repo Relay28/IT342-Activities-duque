@@ -26,13 +26,6 @@ public class ContactsController {
         this.googlePeopleService = googlePeopleService;
     }
 
-//    @GetMapping
-//    @ResponseBody
-//    public List<Person> getContacts() throws IOException {
-//        List<Person> contacts = googlePeopleService.getContacts();
-//        //System.out.println("Fetched Contacts: " + contacts);
-//        return contacts;
-//    }
 
     @PostMapping("/add")
     public String addContact(@RequestParam String firstName, @RequestParam String lastName,
@@ -59,7 +52,7 @@ public class ContactsController {
                                 RedirectAttributes redirectAttributes) {
         try {
             googlePeopleService.updateContact(resourceName, firstName, lastName, emails, phoneNumbers);
-            redirectAttributes.addFlashAttribute("message", "Contact updated successfully!");
+            redirectAttributes.addFlashAttribute("successMessage", "Contact updated successfully!");
         } catch (IOException e) {
             e.printStackTrace();
             if (e.getMessage().contains("etag")) {
@@ -76,7 +69,7 @@ public class ContactsController {
     public String deleteContact(@RequestParam String resourceName, RedirectAttributes redirectAttributes) {
         try {
             googlePeopleService.deleteContact(resourceName);
-            redirectAttributes.addFlashAttribute("message", "Contact deleted successfully!");
+            redirectAttributes.addFlashAttribute("successMessage", "Contact deleted successfully!");
         } catch (IOException e) {
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("error", "Failed to delete contact.");

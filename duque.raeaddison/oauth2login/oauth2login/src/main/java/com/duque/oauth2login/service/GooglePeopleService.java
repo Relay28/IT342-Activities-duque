@@ -69,7 +69,6 @@ public class GooglePeopleService {
 
             // Get the list of connections or an empty list if null
             List<Person> contacts = response.getConnections() != null ? response.getConnections() : new ArrayList<>();
-            System.out.println("Fetched Contacts Count: " + contacts.size()); // DEBUGGING CONTACT COUNT
             return contacts;
 
         } catch (IOException e) {

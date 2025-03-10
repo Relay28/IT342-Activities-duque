@@ -11,12 +11,11 @@
 
   <!-- Flash Messages -->
   <div th:if="${successMessage}" class="alert alert-success text-center" role="alert">
-    <span th:text="${message}"></span>
+    <span th:text="${successMessage}"></span>
   </div>
   <div th:if="${error}" class="alert alert-danger text-center" role="alert">
     <span th:text="${error}"></span>
   </div>
-
 
   <div class="d-flex justify-content-end mb-3">
     <a href="/logout" class="btn btn-secondary">Logout</a>
@@ -39,7 +38,6 @@
     <a href="/add-contact" class="btn btn-primary mt-3">+ Add New Contact</a>
   </div>
 
-
   <!-- Contacts Table -->
   <div class="card shadow-sm p-4">
     <h3 class="mb-3">Contacts List</h3>
@@ -59,22 +57,31 @@
           <span th:unless="${contact.names != null && !contact.names.isEmpty()}">No name</span>
         </td>
         <td>
-            <span th:if="${contact.emailAddresses != null && !contact.emailAddresses.isEmpty()}"
-                  th:each="email : ${contact.emailAddresses}" th:text="${email.value}"></span>
+          <th:block th:if="${contact.emailAddresses != null && !contact.emailAddresses.isEmpty()}">
+            <span th:each="email : ${contact.emailAddresses}">
+              <span th:text="${email.value}"></span><br>
+            </span>
+          </th:block>
           <span th:unless="${contact.emailAddresses != null && !contact.emailAddresses.isEmpty()}">No email</span>
         </td>
         <td>
-            <span th:if="${contact.phoneNumbers != null && !contact.phoneNumbers.isEmpty()}"
-                  th:each="phone : ${contact.phoneNumbers}" th:text="${phone.value}"></span>
+          <th:block th:if="${contact.phoneNumbers != null && !contact.phoneNumbers.isEmpty()}">
+            <span th:each="phone : ${contact.phoneNumbers}">
+              <span th:text="${phone.value}"></span><br>
+            </span>
+          </th:block>
           <span th:unless="${contact.phoneNumbers != null && !contact.phoneNumbers.isEmpty()}">No phone</span>
         </td>
+
         <td class="text-center">
           <a th:href="@{/edit-contact(resourceName=${contact.resourceName})}" class="btn btn-sm btn-warning me-2">Edit</a>
-          <form th:action="@{/api/contacts/delete}" method="post" class="d-inline">
-            <input type="hidden" name="resourceName" th:value="${contact.resourceName}" />
-            <button type="submit" class="btn btn-sm btn-danger"
-                    onclick="return confirm('Are you sure you want to delete this contact?')">Delete</button>
-          </form>
+
+          <!-- Delete Button Triggers Modal -->
+          <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                  data-bs-target="#deleteModal"
+                  th:attr="data-resource=${contact.resourceName}, data-name=${contact.names[0].displayName}">
+            Delete
+          </button>
         </td>
       </tr>
       <tr th:if="${contacts.isEmpty()}">
@@ -84,10 +91,47 @@
     </table>
   </div>
 
-
-
 </div>
 
+<!-- Bootstrap Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete <strong id="contactName"></strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form id="deleteForm" method="post" th:action="@{/api/contacts/delete}">
+          <input type="hidden" name="resourceName" id="resourceName">
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var deleteModal = document.getElementById("deleteModal");
+
+    deleteModal.addEventListener("show.bs.modal", function (event) {
+      var button = event.relatedTarget;
+      var resourceName = button.getAttribute("data-resource");
+      var contactName = button.getAttribute("data-name");
+
+      document.getElementById("resourceName").value = resourceName;
+      document.getElementById("contactName").textContent = contactName;
+    });
+  });
+</script>
+
 </body>
 </html>
